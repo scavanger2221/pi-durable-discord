@@ -1,0 +1,28 @@
+{
+	"$schema": "./config.schema.json",
+	"discord": {
+		"allowedUsers": ["123456789012345678"],
+		"allowedRoles": [],
+		"guilds": ["234567890123456789"],
+		"channels": [],
+		"maxAttachmentMB": 25
+	},
+	"model": {
+		"provider": "anthropic",
+		"id": "claude-sonnet-5-5",
+		"thinking": "medium"
+	},
+	"workspace": {
+		"dir": "./workspace",
+		"mode": "per-thread"
+	},
+	"dataDir": "./data",
+	"pi": {
+		"agentDir": "~/.pi/agent"
+	},
+	"mcp": {
+		"enabled": true
+	},
+	"codemode": true,
+	"logLevel": "info"
+}

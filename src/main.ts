@@ -5,14 +5,11 @@ import { ConfigError, loadConfig } from "./config.ts";
 import { createGateway } from "./discord/gateway.ts";
 import { createLogger, errorSummary } from "./log.ts";
 
-const log = createLogger();
+let log = createLogger();
 
 async function main(): Promise<void> {
 	const config = loadConfig();
-	if (config.allowedUserIds.size === 0 && config.allowedRoleIds.size === 0 && process.env.DISCORD_ALLOW_EVERYONE !== "1") {
-		// Every allowed person can run shell commands on this machine through the agent.
-		throw new ConfigError("set DISCORD_ALLOWED_USERS or DISCORD_ALLOWED_ROLES (or DISCORD_ALLOW_EVERYONE=1)");
-	}
+	log = createLogger(config.logLevel);
 	const agent = await openAgent(config, { log });
 	const gateway = createGateway(config, agent, log);
 	void agent.harness.closed.then((end) => {
@@ -39,10 +36,16 @@ async function main(): Promise<void> {
 		workdir: config.workdir,
 		workspace: config.workspaceMode,
 		data: config.dataDir,
+		config: config.configFile ?? "environment only",
 	});
 }
 
 main().catch((error: unknown) => {
+	if (error instanceof ConfigError) {
+		// Readable, since it usually means editing config.json.
+		process.stderr.write(`Configuration problem: ${error.message}\nRun \`npm run check\` for details, or \`npm run setup\` to create config.json.\n`);
+		process.exit(2);
+	}
 	log.error("startup_failed", { error: errorSummary(error) });
 	process.exit(error instanceof StartupError ? error.exitCode : error instanceof ConfigError ? 2 : 1);
 });

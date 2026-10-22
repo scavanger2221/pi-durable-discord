@@ -1,0 +1,159 @@
+{
+	"$schema": "https://json-schema.org/draft/2020-12/schema",
+	"title": "pi-durable-discord config.json",
+	"type": "object",
+	"properties": {
+		"$schema": {
+			"type": "string"
+		},
+		"discord": {
+			"type": "object",
+			"properties": {
+				"token": {
+					"type": "string",
+					"description": "Bot token. Better kept in .env as DISCORD_TOKEN, which wins over this."
+				},
+				"allowedUsers": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"pattern": "^[0-9]+$"
+					},
+					"description": "User ids allowed to prompt (Developer Mode → right-click a user → Copy User ID). Env: DISCORD_ALLOWED_USERS"
+				},
+				"allowedRoles": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"pattern": "^[0-9]+$"
+					},
+					"description": "Role ids allowed to prompt. Env: DISCORD_ALLOWED_ROLES"
+				},
+				"allowEveryone": {
+					"type": "boolean",
+					"description": "Let everyone who can see a channel prompt (and run shell commands on this machine). Needed when no users or roles are set. Env: DISCORD_ALLOW_EVERYONE=1"
+				},
+				"channels": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"pattern": "^[0-9]+$"
+					},
+					"description": "Channels where mentions and /pi start tasks; empty means all. Env: DISCORD_CHANNELS"
+				},
+				"guilds": {
+					"type": "array",
+					"items": {
+						"type": "string",
+						"pattern": "^[0-9]+$"
+					},
+					"description": "Servers to register slash commands in right away; otherwise they are global and can take an hour. Env: DISCORD_GUILDS"
+				},
+				"maxAttachmentMB": {
+					"type": "number",
+					"minimum": 0,
+					"description": "Larger attachments are named to the model but not saved. Default 25. Env: DISCORD_MAX_ATTACHMENT_MB"
+				}
+			},
+			"additionalProperties": false,
+			"description": "Discord: who may use the bot, and where"
+		},
+		"model": {
+			"type": "object",
+			"properties": {
+				"provider": {
+					"type": "string",
+					"description": "A built-in pi-ai provider, like anthropic, openai or deepseek. Default: pi's defaultProvider. Env: PI_PROVIDER"
+				},
+				"id": {
+					"type": "string",
+					"description": "Model id of that provider. Default: pi's defaultModel. Env: PI_MODEL"
+				},
+				"thinking": {
+					"enum": [
+						"off",
+						"minimal",
+						"low",
+						"medium",
+						"high",
+						"xhigh",
+						"max"
+					],
+					"description": "Thinking level. Default: pi's defaultThinkingLevel, else medium. Env: PI_THINKING"
+				}
+			},
+			"additionalProperties": false,
+			"description": "The model every task uses; credentials come from pi's auth.json or the provider's API key variable"
+		},
+		"workspace": {
+			"type": "object",
+			"properties": {
+				"dir": {
+					"type": "string",
+					"description": "Root of the agent's files. Default ./workspace. Env: PI_WORKDIR"
+				},
+				"mode": {
+					"enum": [
+						"per-thread",
+						"shared"
+					],
+					"description": "per-thread: each task works in <dir>/<threadId>. shared: every task works in <dir>, like one repo checkout. Env: PI_WORKSPACE_MODE"
+				},
+				"instructions": {
+					"type": "string",
+					"description": "Project instructions for every task. Default <dir>/AGENTS.md. Env: PI_INSTRUCTIONS"
+				}
+			},
+			"additionalProperties": false,
+			"description": "Where the agent works"
+		},
+		"dataDir": {
+			"type": "string",
+			"description": "SQLite database and files waiting to be posted. Default ./data. Env: PI_DATA_DIR"
+		},
+		"pi": {
+			"type": "object",
+			"properties": {
+				"agentDir": {
+					"type": "string",
+					"description": "pi's agent directory (settings, auth, AGENTS.md, mcp.json). Default ~/.pi/agent. Env: PI_CODING_AGENT_DIR"
+				},
+				"authFile": {
+					"type": "string",
+					"description": "pi's credentials. Default <agentDir>/auth.json. Env: PI_AUTH_FILE"
+				}
+			},
+			"additionalProperties": false,
+			"description": "pi's files the bot shares"
+		},
+		"mcp": {
+			"type": "object",
+			"properties": {
+				"enabled": {
+					"type": "boolean",
+					"description": "Connect MCP servers. Default true."
+				},
+				"config": {
+					"type": "string",
+					"description": "An mcpServers file. Default <agentDir>/mcp.json. Env: PI_MCP_CONFIG (none turns MCP off)"
+				}
+			},
+			"additionalProperties": false,
+			"description": "MCP servers"
+		},
+		"codemode": {
+			"type": "boolean",
+			"description": "Offer the codemode tool. Default true. Env: PI_CODEMODE"
+		},
+		"logLevel": {
+			"enum": [
+				"debug",
+				"info",
+				"warn",
+				"error"
+			],
+			"description": "Default info. Env: LOG_LEVEL"
+		}
+	},
+	"additionalProperties": false
+}

@@ -141,6 +141,7 @@ describe("pi-durable-discord", () => {
 			provider: "faux",
 			modelId: "faux-1",
 			thinkingLevel: "off",
+			logLevel: "info",
 			workdir: join(dir, "workspace"),
 			workspaceMode: "per-thread",
 			dataDir: join(dir, "data"),
